@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace AbbyWeb.Migrations
+namespace Abby.DataAccess.Migrations
 {
     public partial class AddCategoryToDb : Migration
     {
