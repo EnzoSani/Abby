@@ -11,14 +11,16 @@ namespace AbbyWeb.Pages.Admin.MenuItems
     public class UpsertModel : PageModel
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IWebHostEnvironment _HostEnvironment;
         
         public MenuItem MenuItem { get; set; }
         public IEnumerable<SelectListItem> CategoryList { get; set; }
         public IEnumerable<SelectListItem> FoodTypeList { get; set; }
-        public UpsertModel(IUnitOfWork unitOfWork)
+        public UpsertModel(IUnitOfWork unitOfWork, IWebHostEnvironment hostEnvironment)
         {
             _unitOfWork = unitOfWork;
             MenuItem = new();
+            _HostEnvironment = hostEnvironment;
         }
         public void OnGet()
         {
@@ -37,15 +39,29 @@ namespace AbbyWeb.Pages.Admin.MenuItems
         }
         public async Task<IActionResult> OnPost()
         {
-            
-            if (ModelState.IsValid)
+            string webRootPath = _HostEnvironment.WebRootPath;
+            var files = HttpContext.Request.Form.Files;
+            if (MenuItem.Id == 0)
             {
+                //Create
+                string fileName_new = Guid.NewGuid().ToString();
+                var uploads = Path.Combine(webRootPath, @"images\menuItems");
+                var extension = Path.GetExtension(files[0].FileName);
+
+                using (var fileStream = new FileStream(Path.Combine(uploads, fileName_new + extension),FileMode.Create))
+                {
+                    files[0].CopyTo(fileStream);
+                }
+                MenuItem.Image = @"/images\menuItems\" + fileName_new + extension;
                 _unitOfWork.MenuItem.Add(MenuItem);
                 _unitOfWork.Save();
-                TempData["success"] = "Menu Item created successfully";
-                return RedirectToPage("Index");
             }
-            return Page(); 
+            else
+            {
+                //Edit
+            }
+
+            return RedirectToPage("./Index"); 
            
         }
     }
