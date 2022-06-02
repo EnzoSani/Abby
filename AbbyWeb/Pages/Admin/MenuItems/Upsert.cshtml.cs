@@ -3,6 +3,7 @@ using Abby.DataAccess.Repository.IRepository;
 using Abby.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AbbyWeb.Pages.Admin.MenuItems
 {
@@ -12,6 +13,8 @@ namespace AbbyWeb.Pages.Admin.MenuItems
         private readonly IUnitOfWork _unitOfWork;
         
         public MenuItem MenuItem { get; set; }
+        public IEnumerable<SelectListItem> CategoryList { get; set; }
+        public IEnumerable<SelectListItem> FoodTypeList { get; set; }
         public UpsertModel(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -19,6 +22,18 @@ namespace AbbyWeb.Pages.Admin.MenuItems
         }
         public void OnGet()
         {
+            CategoryList = _unitOfWork.Category.GetAll().Select(i => new SelectListItem()
+            {
+                Text = i.Name,
+                Value = i.Id.ToString()
+            });
+
+            FoodTypeList = _unitOfWork.FoodType.GetAll().Select(i => new SelectListItem()
+            {
+                Text = i.Name,
+                Value = i.Id.ToString()
+            });
+
         }
         public async Task<IActionResult> OnPost()
         {
