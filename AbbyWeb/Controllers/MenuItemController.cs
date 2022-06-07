@@ -22,7 +22,7 @@ namespace AbbyWeb.Controllers
             var menuItemList = _unitOfWork.MenuItem.GetAll(includeProperties: "Category,FoodType");
             return Json(new { data = menuItemList});
         }
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             var objFromDb = _unitOfWork.MenuItem.GetFirstOrDefault(u => u.Id == id);
@@ -33,9 +33,8 @@ namespace AbbyWeb.Controllers
             }
 
             _unitOfWork.MenuItem.Remove(objFromDb);
-            _unitOfWork.Save();
-            var menuItemList = _unitOfWork.MenuItem.GetAll(includeProperties: "Category,FoodType");
-            return Json(new { succes = true, message = "Delete succesful." });
+            _unitOfWork.Save();           
+            return Json(new { success = true, message = "Delete successful." });
         }
     }
 }
