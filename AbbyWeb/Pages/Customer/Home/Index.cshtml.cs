@@ -18,7 +18,7 @@ namespace AbbyWeb.Pages.Customer.Home
         public void OnGet()
         {
             MenuItemList = _unitOfWork.MenuItem.GetAll(includeProperties: "Category,FoodType");
-            CategoryList = _unitOfWork.MenuItem.GetAll();
+            CategoryList = _unitOfWork.Category.GetAll();
         }
     }
 }
