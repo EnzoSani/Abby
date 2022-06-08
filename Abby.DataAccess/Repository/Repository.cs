@@ -19,6 +19,7 @@ namespace Abby.DataAccess.Repository
             _db = db;
             //FoodType,Category
             //_db.MenuItem.Include(u => u.FoodType).Include(u => u.Category);
+            //_db.MenuItem.OrderBy(u=>u.Name);
             this.dbSet=db.Set<T>();
         }
         public void Add(T entity)
@@ -26,7 +27,8 @@ namespace Abby.DataAccess.Repository
             dbSet.Add(entity);
         }
 
-        public IEnumerable<T> GetAll(string? includeProperties = null)
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, string ? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
             if(includeProperties != null)
@@ -38,11 +40,15 @@ namespace Abby.DataAccess.Repository
                     query = query.Include(includeProperty);
                 }
             }
+            if (orderBy != null)
+            {
+                return orderBy(query).ToList();
+            }
 
             return query.ToList();
         }
 
-        public T GetFirstOrDefault(Expression<Func<T, bool>>? filter = null)
+        public T GetFirstOrDefault(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
             if(filter != null)
